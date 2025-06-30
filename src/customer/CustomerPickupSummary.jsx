@@ -64,15 +64,19 @@ const ConfirmPickup = () => {
       <main className="container mx-auto px-6 py-8 max-w-4xl">
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link to="/schedule-pickup" className="text-blue-600 hover:text-blue-700">
-            Schedule Pickup
+          <Link to="/request-pickup" className="text-blue-600 hover:text-blue-700">
+            Request Pickup
           </Link>
           <span>/</span>
           <Link to="/select-waste-type" className="text-blue-600 hover:text-blue-700">
             Select Waste Type
           </Link>
           <span>/</span>
-          <span className="text-gray-900 font-medium">Select Pickup Schedule</span>
+          <Link to="/pin-location" className="text-blue-600 hover:text-blue-700">
+            Pin Location
+          </Link>
+          <span>/</span>
+          <span className="text-gray-900 font-medium">Confirm Pickup Schedule</span>
         </div>
 
         {/* Progress */}
