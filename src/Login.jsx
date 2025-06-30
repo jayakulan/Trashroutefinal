@@ -24,6 +24,8 @@ const Login = () => {
     } else if (formData.email === "company@gmail.com" && formData.password === "company") {
       navigate("/company-waste-prefer")
     } else {
+      // Set session flag for customer popup
+      sessionStorage.setItem("showMinimumWastePopup", "true")
       navigate("/customer/trash-type") // Redirect after successful login
     }
     // Handle login logic here
