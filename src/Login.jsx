@@ -7,6 +7,7 @@ const Login = () => {
     email: "",
     password: "",
   })
+  const [error, setError] = useState("")
   const navigate = useNavigate()
 
   const handleChange = (e) => {
@@ -14,19 +15,36 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     })
+    setError("")
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("Login attempt:", formData)
-    if (formData.email === "admin@gmail.com" && formData.password === "admin") {
-      navigate("/admin/dashboard")
-    } else if (formData.email === "company@gmail.com" && formData.password === "company") {
-      navigate("/company-waste-prefer")
-    } else {
-      navigate("/customer/trash-type") // Redirect after successful login
+    setError("")
+    try {
+      const response = await fetch("http://localhost/Trashroutefinal1/Trashroutefinal/Backend/api/auth/login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      })
+      const result = await response.json()
+      if (result.success) {
+        const role = result.data.user.role
+        if (role === "admin") {
+          navigate("/admin/dashboard")
+        } else if (role === "company") {
+          navigate("/company-waste-prefer")
+        } else if (role === "customer") {
+          navigate("/customer/trash-type")
+        } else {
+          setError("Unknown user role")
+        }
+      } else {
+        setError(result.message || "Login failed")
+      }
+    } catch (err) {
+      setError("Server error")
     }
-    // Handle login logic here
   }
 
   return (
@@ -66,6 +84,10 @@ const Login = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Welcome back</h1>
           </div>
+
+          {error && (
+            <div className="text-red-600 text-sm mb-2 text-center">{error}</div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}

@@ -1,28 +1,37 @@
 "use client"
 
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import { Recycle } from "lucide-react"
+import { useAuth } from "./context/AuthContext"
 
-const Login = () => {
+const LoginCompany = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   })
-  const navigate = useNavigate()
+  const [error, setError] = useState("")
+  const { login } = useAuth()
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     })
+    setError("")
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log("Login attempt:", formData)
-    // Handle login logic here
-    navigate("/company-waste-prefer")
+    setError("")
+    try {
+      const result = await login(formData.email, formData.password)
+      if (!result.success) {
+        setError(result.message || "Login failed")
+      }
+    } catch (err) {
+      setError("Server error")
+    }
   }
 
   return (
@@ -48,7 +57,7 @@ const Login = () => {
               <Link to="/contact" className="text-gray-700 hover:text-gray-900 font-medium">
                 Contact
               </Link>
-              <Link to="/signup" className="text-gray-700 hover:text-gray-900 font-medium">
+              <Link to="/company-signup" className="text-gray-700 hover:text-gray-900 font-medium">
                 Sign Up
               </Link>
             </div>
@@ -62,6 +71,8 @@ const Login = () => {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900">Company Login</h1>
           </div>
+
+          {error && <div className="text-red-600 text-sm mb-2 text-center">{error}</div>}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email Field */}
@@ -127,4 +138,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default LoginCompany

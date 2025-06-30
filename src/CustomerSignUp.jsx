@@ -17,7 +17,7 @@ const SignUp = () => {
   const [showOtpModal, setShowOtpModal] = useState(false)
   const [otp, setOtp] = useState("")
   const [otpError, setOtpError] = useState("")
-  const [success, setSuccess] = useState(false)
+  const [success, setSuccess] = useState("")
   const navigate = useNavigate()
   const CORRECT_OTP = "123456" // Simulated correct OTP
 
@@ -26,18 +26,43 @@ const SignUp = () => {
       ...formData,
       [e.target.name]: e.target.value,
     })
-    setError("") // Clear error on change
+    setError("")
+    setSuccess("")
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.")
       return
     }
     setError("")
-    // Instead of registration, show OTP modal
-    setShowOtpModal(true)
+    setSuccess("")
+    const userData = {
+      name: formData.fullName,
+      email: formData.email,
+      password: formData.password,
+      role: "customer",
+      contact_number: formData.phoneNumber,
+      address: formData.address,
+    }
+    try {
+      const response = await fetch("http://localhost/Trashroutefinal1/Trashroutefinal/Backend/api/auth/register.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      })
+      const result = await response.json()
+      if (result.success) {
+        setSuccess("Registration successful! Please enter the OTP sent to your email/phone.")
+        setShowOtpModal(true)
+        // Optionally clear form fields here
+      } else {
+        setError(result.message || "Registration failed")
+      }
+    } catch (err) {
+      setError("Server error")
+    }
   }
 
   const handleOtpChange = (e) => {
@@ -49,7 +74,7 @@ const SignUp = () => {
     e.preventDefault()
     if (otp === CORRECT_OTP) {
       setShowOtpModal(false)
-      setSuccess(true)
+      setSuccess("OTP verified! Redirecting to login...")
       setTimeout(() => {
         navigate("/login")
       }, 1500)
@@ -117,7 +142,7 @@ const SignUp = () => {
             <div className="text-red-600 text-sm mb-2 text-center">{error}</div>
           )}
           {success && (
-            <div className="text-green-600 text-sm mb-2 text-center font-semibold">Successfully registered!</div>
+            <div className="text-green-600 text-sm mb-2 text-center font-semibold">{success}</div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -1,5 +1,6 @@
 <?php
 class Helpers {
+    private static $secretKey = "trashroute_secret_key_2024"; // You should store this in an environment variable in production
     
     // Send JSON response
     public static function sendResponse($data, $status = 200, $message = '') {
@@ -31,7 +32,7 @@ class Helpers {
     
     // Hash password
     public static function hashPassword($password) {
-        return password_hash($password, PASSWORD_DEFAULT);
+        return password_hash($password, PASSWORD_BCRYPT);
     }
     
     // Verify password
@@ -41,25 +42,61 @@ class Helpers {
     
     // Generate JWT token (simple implementation)
     public static function generateToken($user_id, $role) {
+        $issuedAt = time();
+        $expirationTime = $issuedAt + 3600; // Token valid for 1 hour
+
         $payload = [
             'user_id' => $user_id,
             'role' => $role,
-            'exp' => time() + (60 * 60 * 24) // 24 hours
+            'iat' => $issuedAt,
+            'exp' => $expirationTime
         ];
+
+        // Create JWT Header
+        $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
+        $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+
+        // Create JWT Payload
+        $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(json_encode($payload)));
+
+        // Create Signature
+        $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, self::$secretKey, true);
+        $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
         
-        return base64_encode(json_encode($payload));
+        return $jwt;
     }
     
     // Verify JWT token
     public static function verifyToken($token) {
         try {
-            $payload = json_decode(base64_decode($token), true);
-            
-            if (!$payload || !isset($payload['exp']) || $payload['exp'] < time()) {
+            $tokenParts = explode('.', $token);
+            if (count($tokenParts) != 3) {
                 return false;
             }
-            
-            return $payload;
+
+            $header = base64_decode(str_replace(['-', '_'], ['+', '/'], $tokenParts[0]));
+            $payload = base64_decode(str_replace(['-', '_'], ['+', '/'], $tokenParts[1]));
+            $signatureProvided = $tokenParts[2];
+
+            // Check the expiration time
+            $payloadData = json_decode($payload, true);
+            if (isset($payloadData['exp']) && $payloadData['exp'] < time()) {
+                return false;
+            }
+
+            // Verify signature
+            $base64UrlHeader = $tokenParts[0];
+            $base64UrlPayload = $tokenParts[1];
+            $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, self::$secretKey, true);
+            $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+            if ($base64UrlSignature !== $signatureProvided) {
+                return false;
+            }
+
+            return $payloadData;
         } catch (Exception $e) {
             return false;
         }
@@ -216,6 +253,23 @@ class Helpers {
         
         $result = $stmt->fetch();
         return $result['count'] > 0;
+    }
+
+    // Get user from token
+    public static function getUserFromToken($token) {
+        if (!$token) {
+            return null;
+        }
+        
+        $payload = self::verifyToken($token);
+        if (!$payload) {
+            return null;
+        }
+        
+        return [
+            'user_id' => $payload['user_id'],
+            'role' => $payload['role']
+        ];
     }
 }
 ?>

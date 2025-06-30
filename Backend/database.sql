@@ -139,6 +139,13 @@ INSERT INTO registered_users (name, email, password_hash, contact_number, addres
 -- Insert admin record
 INSERT INTO admins (admin_id) VALUES (LAST_INSERT_ID());
 
+-- Insert additional admin user
+INSERT INTO registered_users (name, email, password_hash, contact_number, address, role) VALUES
+('Sarah Johnson', 'sarah.johnson@trashroute.com', 'adminSJ2024', '+94771234567', '123 Management Drive, Colombo 07, Sri Lanka', 'admin');
+
+-- Insert additional admin record
+INSERT INTO admins (admin_id) VALUES (LAST_INSERT_ID());
+
 -- Insert sample customer user
 INSERT INTO registered_users (name, email, password_hash, contact_number, address, role) VALUES
 ('John Customer', 'customer@gmail.com', 'customer', '1234567891', 'Customer Address', 'customer');

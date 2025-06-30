@@ -1,38 +1,87 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Recycle } from "lucide-react"
 
 const CompanySignUp = () => {
-  const [selectedRole, setSelectedRole] = useState("company")
   const [formData, setFormData] = useState({
     companyName: "",
-    companyRegistrationNumber: "",
     email: "",
     password: "",
     confirmPassword: "",
     address: "",
     phoneNumber: "",
+    companyRegNumber: "",
   })
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState("")
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [otp, setOtp] = useState("")
+  const [otpError, setOtpError] = useState("")
+  const navigate = useNavigate()
+  const CORRECT_OTP = "123456" // Simulated correct OTP
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     })
+    setError("")
+    setSuccess("")
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setError("")
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.")
       return
     }
-    console.log("Company registration attempt:", { ...formData, role: selectedRole })
-    // Handle company registration logic here
+    setError("")
+    setSuccess("")
+    const userData = {
+      name: formData.companyName,
+      email: formData.email,
+      password: formData.password,
+      role: "company",
+      contact_number: formData.phoneNumber,
+      address: formData.address,
+      company_reg_number: formData.companyRegNumber,
+    }
+    try {
+      const response = await fetch("http://localhost/Trashroutefinal1/Trashroutefinal/Backend/api/auth/register.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      })
+      const result = await response.json()
+      if (result.success) {
+        setSuccess("Registration successful! Please enter the OTP sent to your email/phone.")
+        setShowOtpModal(true)
+      } else {
+        setError(result.message || "Registration failed")
+      }
+    } catch (err) {
+      setError("Server error")
+    }
+  }
+
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value)
+    setOtpError("")
+  }
+
+  const handleOtpVerify = (e) => {
+    e.preventDefault()
+    if (otp === CORRECT_OTP) {
+      setShowOtpModal(false)
+      setSuccess("OTP verified! Redirecting to login...")
+      setTimeout(() => {
+        navigate("/login-company")
+      }, 1500)
+    } else {
+      setOtpError("Invalid OTP. Please try again.")
+    }
   }
 
   return (
@@ -58,7 +107,7 @@ const CompanySignUp = () => {
               <Link to="/contact" className="text-gray-700 hover:text-gray-900 font-medium">
                 Contact
               </Link>
-              <Link to="/login" className="text-gray-700 hover:text-gray-900 font-medium">
+              <Link to="/login-company" className="text-gray-700 hover:text-gray-900 font-medium">
                 Login
               </Link>
             </div>
@@ -70,7 +119,7 @@ const CompanySignUp = () => {
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Create Your Account</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Register Your Company</h1>
           </div>
 
           {/* Role Selection Tabs */}
@@ -83,20 +132,21 @@ const CompanySignUp = () => {
             </Link>
             <button
               type="button"
-              className="flex-1 py-2 px-4 rounded-md font-medium transition-colors bg-white text-gray-900 shadow-sm"
+              className="flex-1 py-2 px-4 rounded-md font-medium transition-colors bg-white text-gray-900 shadow-sm cursor-default"
+              disabled
             >
               Company
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-center mb-2">
-                {error}
-              </div>
-            )}
+          {error && (
+            <div className="text-red-600 text-sm mb-2 text-center">{error}</div>
+          )}
+          {success && (
+            <div className="text-green-600 text-sm mb-2 text-center font-semibold">{success}</div>
+          )}
 
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Company Name Field */}
             <div>
               <input
@@ -107,20 +157,6 @@ const CompanySignUp = () => {
                 className="w-full px-4 py-3 bg-blue-50 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
                 placeholder="Company Name"
                 value={formData.companyName}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Company Registration Number Field */}
-            <div>
-              <input
-                id="companyRegistrationNumber"
-                name="companyRegistrationNumber"
-                type="text"
-                required
-                className="w-full px-4 py-3 bg-blue-50 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
-                placeholder="Company Registration Number"
-                value={formData.companyRegistrationNumber}
                 onChange={handleChange}
               />
             </div>
@@ -195,10 +231,24 @@ const CompanySignUp = () => {
               />
             </div>
 
+            {/* Company Registration Number Field */}
+            <div>
+              <input
+                id="companyRegNumber"
+                name="companyRegNumber"
+                type="text"
+                required
+                className="w-full px-4 py-3 bg-blue-50 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors"
+                placeholder="Company Registration Number"
+                value={formData.companyRegNumber}
+                onChange={handleChange}
+              />
+            </div>
+
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full bg-gray-300 hover:bg-gray-400 text-gray-700 font-semibold py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 mt-6"
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 mt-6"
             >
               Register
             </button>
@@ -206,13 +256,48 @@ const CompanySignUp = () => {
             {/* Login Link */}
             <div className="text-center mt-6">
               <span className="text-gray-600 text-sm">Already have an account? </span>
-              <Link to="/login" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+              <Link to="/login-company" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
                 Login
               </Link>
             </div>
           </form>
         </div>
       </div>
+
+      {/* OTP Modal */}
+      {showOtpModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+          <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm relative">
+            <h2 className="text-xl font-bold mb-4 text-center">OTP Verification</h2>
+            <p className="mb-2 text-gray-700 text-center">Enter the OTP sent to your email/phone.</p>
+            <form onSubmit={handleOtpVerify} className="space-y-4">
+              <input
+                type="text"
+                value={otp}
+                onChange={handleOtpChange}
+                maxLength={6}
+                className="w-full px-4 py-3 bg-blue-50 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-center tracking-widest text-lg"
+                placeholder="Enter OTP"
+                autoFocus
+              />
+              {otpError && <div className="text-red-600 text-sm text-center">{otpError}</div>}
+              <button
+                type="submit"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Verify OTP
+              </button>
+              <button
+                type="button"
+                className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors"
+                onClick={() => setShowOtpModal(false)}
+              >
+                Cancel
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
