@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Recycle } from "lucide-react"
 
 const CompanySignUp = () => {
@@ -16,12 +16,19 @@ const CompanySignUp = () => {
     phoneNumber: "",
   })
   const [error, setError] = useState("")
+  const [showOtpModal, setShowOtpModal] = useState(false)
+  const [otp, setOtp] = useState("")
+  const [otpError, setOtpError] = useState("")
+  const [success, setSuccess] = useState(false)
+  const navigate = useNavigate()
+  const CORRECT_OTP = "123456" // Simulated correct OTP
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     })
+    setError("") // Clear error on change
   }
 
   const handleSubmit = (e) => {
@@ -31,8 +38,26 @@ const CompanySignUp = () => {
       setError("Passwords do not match.")
       return
     }
-    console.log("Company registration attempt:", { ...formData, role: selectedRole })
-    // Handle company registration logic here
+    // Instead of registration, show OTP modal
+    setShowOtpModal(true)
+  }
+
+  const handleOtpChange = (e) => {
+    setOtp(e.target.value)
+    setOtpError("")
+  }
+
+  const handleOtpVerify = (e) => {
+    e.preventDefault()
+    if (otp === CORRECT_OTP) {
+      setShowOtpModal(false)
+      setSuccess(true)
+      setTimeout(() => {
+        navigate("/login")
+      }, 1500)
+    } else {
+      setOtpError("Invalid OTP. Please try again.")
+    }
   }
 
   return (
@@ -95,6 +120,9 @@ const CompanySignUp = () => {
               <div className="bg-red-100 text-red-700 px-4 py-2 rounded-lg text-center mb-2">
                 {error}
               </div>
+            )}
+            {success && (
+              <div className="text-green-600 text-sm mb-2 text-center font-semibold">Successfully registered!</div>
             )}
 
             {/* Company Name Field */}
@@ -211,6 +239,41 @@ const CompanySignUp = () => {
               </Link>
             </div>
           </form>
+
+          {/* OTP Modal */}
+          {showOtpModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-sm relative">
+                <h2 className="text-xl font-bold mb-4 text-center">OTP Verification</h2>
+                <p className="mb-2 text-gray-700 text-center">Enter the OTP sent to your email/phone.</p>
+                <form onSubmit={handleOtpVerify} className="space-y-4">
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={handleOtpChange}
+                    maxLength={6}
+                    className="w-full px-4 py-3 bg-blue-50 border-0 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-colors text-center tracking-widest text-lg"
+                    placeholder="Enter OTP"
+                    autoFocus
+                  />
+                  {otpError && <div className="text-red-600 text-sm text-center">{otpError}</div>}
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                  >
+                    Verify OTP
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold py-2 px-4 rounded-lg transition-colors"
+                    onClick={() => setShowOtpModal(false)}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

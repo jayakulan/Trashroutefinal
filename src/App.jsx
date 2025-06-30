@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import Login from './Login.jsx'
 import LoginCompany from './LoginCompany.jsx'
@@ -7,6 +7,7 @@ import CompanySignUp from './CompanySignUp.jsx'
 import CustomerTrashType from './customer/CustomerTrashType.jsx'
 import CustomerLocationPin from './customer/CustomerLocationPin.jsx'
 import CustomerPickupSummary from './customer/CustomerPickupSummary.jsx'
+import CustomerTrackPickup from './customer/CustomerTrackPickup.jsx'
 import CompanyWastePrefer from './company/CompanyWastePrefer.jsx'
 import RouteActivation from './company/RouteAccess.jsx'
 import RouteMap from './company/RouteMap.jsx'
@@ -20,6 +21,18 @@ import PickupRequests from './admin/Requests.jsx'
 function HomePage() {
   const [userType, setUserType] = useState('customer')
   const navigate = useNavigate()
+  const [currentSlide, setCurrentSlide] = useState(0)
+  const slideCount = 4
+  const sliderRef = useRef(null)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slideCount)
+    }, 3500)
+    return () => clearInterval(interval)
+  }, [])
+
+  const goToSlide = (idx) => setCurrentSlide(idx)
 
   // Unsplash or similar royalty-free images
   const heroImg = 'https://images.unsplash.com/photo-1508873699372-7aeab60b44c9?auto=format&fit=crop&w=900&q=80' // recycling bins
@@ -35,9 +48,8 @@ function HomePage() {
       {/* Navigation */}
       <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-          <div className="flex items-center space-x-2">
-            <img src="/vite.svg" alt="Logo" className="h-6 w-6" />
-            <span className="font-bold text-lg">TrashRoute</span>
+          <div className="flex items-center">
+            <img src="/images/trashroutelogo.jpg" alt="TrashRoute Logo" className="h-10 w-auto" />
           </div>
           <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
             <a href="#about" className="hover:text-green-600">About</a>
@@ -63,9 +75,9 @@ function HomePage() {
               </button>
               <button
                 onClick={() => { setUserType('company'); navigate('/signup'); }}
-                className={`px-6 py-2 rounded-full font-semibold text-white ${userType==='company' ? 'bg-blue-600' : 'bg-white text-black'} shadow transition`}
+                className="px-6 py-2 rounded-full font-semibold text-black bg-white border border-blue-700 shadow transition"
               >
-                Sign up
+                Sign Up
               </button>
             </div>
           </div>
@@ -75,34 +87,54 @@ function HomePage() {
       {/* How It Works */}
       <section className="max-w-7xl mx-auto mt-16 px-4">
         <h2 className="text-xl font-bold mb-6">How It Works</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="bg-white rounded-xl p-4 flex flex-col items-center shadow hover:shadow-md transition">
-            <img src={howItWorksImgs[0]} alt="Notify Trash" className="h-24 w-full object-cover rounded mb-3" />
-            <div className="font-semibold mb-1">Notify Trash Availability</div>
-            <div className="text-gray-500 text-sm text-center">Local users inform the system about available recyclable materials.</div>
+        <div className="overflow-hidden relative w-[540px] mx-auto">
+          <div
+            ref={sliderRef}
+            className="flex transition-transform duration-700"
+            style={{ transform: `translateX(-${currentSlide * 540}px)` }}
+          >
+            <div className="bg-white rounded-xl p-6 flex flex-col items-center shadow hover:shadow-md transition min-w-[540px] h-[420px]">
+              <img src={howItWorksImgs[0]} alt="Notify Trash" className="h-60 w-full object-cover rounded mb-3" />
+              <div className="font-semibold mb-1">Notify Trash Availability</div>
+              <div className="text-gray-500 text-sm text-center">Local users inform the system about available recyclable materials.</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 flex flex-col items-center shadow hover:shadow-md transition min-w-[540px] h-[420px]">
+              <img src={howItWorksImgs[1]} alt="Route Optimization" className="h-60 w-full object-cover rounded mb-3" />
+              <div className="font-semibold mb-1">Route Optimization</div>
+              <div className="text-gray-500 text-sm text-center">TrashRoute analyzes and creates categorized, optimized pickup routes.</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 flex flex-col items-center shadow hover:shadow-md transition min-w-[540px] h-[420px]">
+              <img src={howItWorksImgs[2]} alt="Notify Industries" className="h-60 w-full object-cover rounded mb-3" />
+              <div className="font-semibold mb-1">Notify Industries</div>
+              <div className="text-gray-500 text-sm text-center">Registered companies are notified with detailed route and material info.</div>
+            </div>
+            <div className="bg-white rounded-xl p-6 flex flex-col items-center shadow hover:shadow-md transition min-w-[540px] h-[420px]">
+              <img src={howItWorksImgs[3]} alt="Industry Accepts Route" className="h-60 w-full object-cover rounded mb-3" />
+              <div className="font-semibold mb-1">Industry Accepts Route</div>
+              <div className="text-gray-500 text-sm text-center">Companies select and confirm routes they want to handle.</div>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-4 flex flex-col items-center shadow hover:shadow-md transition">
-            <img src={howItWorksImgs[1]} alt="Route Optimization" className="h-24 w-full object-cover rounded mb-3" />
-            <div className="font-semibold mb-1">Route Optimization</div>
-            <div className="text-gray-500 text-sm text-center">TrashRoute analyzes and creates categorized, optimized pickup routes.</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 flex flex-col items-center shadow hover:shadow-md transition">
-            <img src={howItWorksImgs[2]} alt="Notify Industries" className="h-24 w-full object-cover rounded mb-3" />
-            <div className="font-semibold mb-1">Notify Industries</div>
-            <div className="text-gray-500 text-sm text-center">Registered companies are notified with detailed route and material info.</div>
-          </div>
-          <div className="bg-white rounded-xl p-4 flex flex-col items-center shadow hover:shadow-md transition">
-            <img src={howItWorksImgs[3]} alt="Industry Accepts Route" className="h-24 w-full object-cover rounded mb-3" />
-            <div className="font-semibold mb-1">Industry Accepts Route</div>
-            <div className="text-gray-500 text-sm text-center">Companies select and confirm routes they want to handle.</div>
+          <div className="flex justify-center mt-4 gap-2">
+            {[...Array(slideCount)].map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goToSlide(idx)}
+                className={`w-3 h-3 rounded-full border border-gray-400 ${currentSlide === idx ? 'bg-blue-600' : 'bg-gray-300'}`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
           </div>
         </div>
       </section>
 
       {/* About Us */}
-      <section id="about" className="max-w-4xl mx-auto mt-16 px-4">
+      <section id="about" className="max-w-7xl mx-auto mt-16 px-4">
         <h2 className="text-lg font-bold mb-2">About Us</h2>
-        <p className="text-gray-700">TrashRoute is a platform dedicated to improving waste management by connecting households with waste processing companies. Our goal is to create a more efficient and sustainable system for waste disposal and recycling.</p>
+        <p className="text-gray-700">TrashRoute is an innovative web-based platform built to improve how recyclable waste is managed and reused. We connect everyday people who have recyclable materials—like plastic, paper, glass, and metal—with industries that can reuse those materials in their production.<br></br>
+
+        Instead of collecting and storing waste, our system allows local users to simply notify the platform when they have recyclable items. TrashRoute then creates an optimized and categorized route for these materials and offers it to registered industries. When an industry accepts a route, they collect the materials directly from the listed locations.<br></br>
+
+        By removing the need for middle collection points, we reduce costs, save time, and contribute to a cleaner environment. TrashRoute empowers communities and industries to work together toward a sustainable future—turning everyday waste into valuable resources.</p>
       </section>
 
       {/* Our Features */}
@@ -164,6 +196,7 @@ function App() {
       <Route path="/customer/trash-type" element={<CustomerTrashType />} />
       <Route path="/customer/location-pin" element={<CustomerLocationPin />} />
       <Route path="/customer/pickup-summary" element={<CustomerPickupSummary />} />
+      <Route path="/customer/track-pickup" element={<CustomerTrackPickup />} />
       <Route path="/company-waste-prefer" element={<CompanyWastePrefer />} />
       <Route path="/company/route-access" element={<RouteActivation />} />
       <Route path="/company/route-map" element={<RouteMap />} />
