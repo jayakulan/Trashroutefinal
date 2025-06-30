@@ -36,8 +36,7 @@ function HomePage() {
       <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
           <div className="flex items-center space-x-2">
-            <img src="/vite.svg" alt="Logo" className="h-6 w-6" />
-            <span className="font-bold text-lg">TrashRoute</span>
+            <img src="/public/images/logo.png" alt="Logo" className="h-16 w-34" />
           </div>
           <div className="hidden md:flex space-x-8 text-gray-700 font-medium">
             <a href="#about" className="hover:text-green-600">About</a>
@@ -50,10 +49,19 @@ function HomePage() {
       {/* Hero Section */}
       <section className="flex justify-center mt-10">
         <div className="w-full max-w-4xl rounded-2xl overflow-hidden relative" style={{background:'#cfe3d6'}}>
-          <img src={heroImg} alt="Recycle bins" className="w-full h-80 object-cover object-center opacity-80" />
+          <video
+            src="/homevedio.mp4"
+            className="w-full h-80 object-cover object-center opacity-80"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            Your browser does not support the video tag.
+          </video>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
-            <h1 className="text-white text-3xl md:text-5xl font-extrabold drop-shadow-lg">Revolutionizing Waste Management</h1>
-            <p className="text-white text-base md:text-lg mt-2 mb-6 drop-shadow">Connecting households with responsible waste processing companies for a cleaner, greener future.</p>
+            <h1 className="text-black text-3xl md:text-5xl font-extrabold drop-shadow-lg">Revolutionizing Waste Management</h1>
+            <p className="text-black text-base md:text-lg mt-2 mb-6 drop-shadow">Connecting households with responsible waste processing companies for a cleaner, greener future.</p>
             <div className="flex gap-4">
               <button
                 onClick={() => { setUserType('customer'); navigate('/login'); }}
