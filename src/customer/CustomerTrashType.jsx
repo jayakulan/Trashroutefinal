@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { Recycle, Bell, Minus, Plus } from "lucide-react"
+import MinimumWastePopup from "./MinimumWastePopup"
 
-const RequestPickup = () => {
+const CustomerTrashType = () => {
   const [wasteTypes, setWasteTypes] = useState({
     plastics: { quantity: 3, selected: true },
     paper: { quantity: 3, selected: true },
@@ -11,6 +12,28 @@ const RequestPickup = () => {
   })
 
   const navigate = useNavigate()
+
+  // Popup state
+  const [isPopupOpen, setIsPopupOpen] = useState(() => {
+    // Only show if not hidden and session flag is set
+    const hide = localStorage.getItem("hideMinimumWastePopup") === "true"
+    const shouldShow = sessionStorage.getItem("showMinimumWastePopup") === "true"
+    if (!hide && shouldShow) {
+      // Clear the session flag so it only shows once per login
+      sessionStorage.removeItem("showMinimumWastePopup")
+      return true
+    }
+    return false
+  })
+
+  const handleClosePopup = () => setIsPopupOpen(false)
+  const handleLearnMore = () => {
+    // You can navigate to a help page or show more info here
+    setIsPopupOpen(false)
+  }
+  const handleDontShowAgain = () => {
+    localStorage.setItem("hideMinimumWastePopup", "true")
+  }
 
   const updateQuantity = (type, newQuantity) => {
     if (newQuantity >= 0 && newQuantity <= 50) {
@@ -94,41 +117,25 @@ const RequestPickup = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <MinimumWastePopup
+        isOpen={isPopupOpen}
+        onClose={handleClosePopup}
+        onLearnMore={handleLearnMore}
+        onDontShowAgain={handleDontShowAgain}
+      />
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <nav className="container mx-auto px-6 py-4">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <Recycle className="w-6 h-6 text-green-600" />
-              <span className="text-xl font-bold text-gray-900">TrashRoute</span>
-            </div>
-
-            {/* Navigation */}
-            <div className="flex items-center space-x-8">
-              <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium">
-                Home
-              </Link>
-              <Link to="/request-pickup" className="text-blue-600 font-medium">
-                Request Pickup
-              </Link>
-              <Link to="/track-pickup" className="text-gray-700 hover:text-gray-900 font-medium">
-                Track Pickup
-              </Link>
-            </div>
-
-            {/* Right side */}
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-600 hover:text-gray-900">
-                <Bell className="w-5 h-5" />
-              </button>
-              <div className="w-8 h-8 bg-orange-400 rounded-full flex items-center justify-center">
-                <img
-                  src="https://via.placeholder.com/32"
-                  alt="User"
-                  className="w-8 h-8 rounded-full object-cover"
-                />
-              </div>
+      <header className="bg-white border-b">
+        <nav className="container mx-auto px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Recycle className="w-6 h-6 text-green-600" />
+            <span className="text-xl font-bold text-gray-900">TrashRoute</span>
+          </div>
+          <div className="flex items-center space-x-8">
+            <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium">Home</Link>
+            <Link to="/customer/trash-type" className="text-gray-700 hover:text-gray-900 font-medium">Request Pickup</Link>
+            <Link to="/customer/track-pickup" className="text-gray-700 hover:text-gray-900 font-medium">Track Pickup</Link>
+            <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 flex items-center justify-center">
+              <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" className="w-8 h-8 object-cover" />
             </div>
           </div>
         </nav>
@@ -138,7 +145,7 @@ const RequestPickup = () => {
       <main className="container mx-auto px-6 py-8 max-w-4xl">
         {/* Breadcrumb */}
         <div className="flex items-center space-x-2 text-sm text-gray-600 mb-8">
-          <Link to="/request-pickup" className="text-blue-600 hover:text-blue-700">
+          <Link to="/customer/trash-type" className="text-blue-600 hover:text-blue-700">
             Request Pickup
           </Link>
           <span>/</span>
@@ -239,4 +246,4 @@ const RequestPickup = () => {
   )
 }
 
-export default RequestPickup
+export default CustomerTrashType

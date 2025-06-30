@@ -48,7 +48,7 @@ function ScrollToTopButton() {
   return (
     <button
       onClick={handleClick}
-      className={`fixed z-50 bottom-8 right-8 w-14 h-14 flex items-center justify-center rounded-full bg-white shadow-lg border-2 border-[#3a5f46] transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={fixed z-50 bottom-8 right-8 w-14 h-14 flex items-center justify-center rounded-full bg-white shadow-lg border-2 border-[#3a5f46] transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0 pointer-events-none'}}
       aria-label="Scroll to top"
       style={{ outline: 'none' }}
     >
@@ -139,7 +139,7 @@ function HomePage() {
             <div className="flex gap-4">
               <button
                 onClick={() => { setUserType('customer'); navigate('/login'); }}
-                className={`px-6 py-2 rounded-full font-semibold text-white ${userType==='customer' ? 'bg-blue-600' : 'bg-white text-gray-800'} shadow transition`}
+                className={px-6 py-2 rounded-full font-semibold text-white ${userType==='customer' ? 'bg-blue-600' : 'bg-white text-gray-800'} shadow transition}
               >
                 Sign In
               </button>
@@ -170,7 +170,7 @@ function HomePage() {
                 onClick={() => setShowFeature1Info(true)}
               >
                 Explore
-                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡️</span>
+                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡</span>
               </button>
             </div>
           </div>
@@ -186,7 +186,7 @@ function HomePage() {
                 onClick={() => setShowFeature2Info(true)}
               >
                 Explore
-                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡️</span>
+                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡</span>
               </button>
             </div>
           </div>
@@ -202,7 +202,7 @@ function HomePage() {
                 onClick={() => setShowFeature3Info(true)}
               >
                 Explore
-                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡️</span>
+                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡</span>
               </button>
             </div>
           </div>
@@ -218,7 +218,7 @@ function HomePage() {
                 onClick={() => setShowFeature4Info(true)}
               >
                 Explore
-                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡️</span>
+                <span className="inline-block transition-transform duration-300 group-hover/button:translate-x-2 group-hover/button:drop-shadow-glow">➡</span>
               </button>
             </div>
           </div>

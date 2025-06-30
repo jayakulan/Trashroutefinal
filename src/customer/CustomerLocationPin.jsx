@@ -49,7 +49,7 @@ const PinLocation = () => {
           </div>
           <div className="flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium">Home</Link>
-            <Link to="/request-pickup" className="text-gray-700 hover:text-gray-900 font-medium">Request Pickup</Link>
+            <Link to="/customer/trash-type" className="text-gray-700 hover:text-gray-900 font-medium">Request Pickup</Link>
             <Link to="/track-pickup" className="text-gray-700 hover:text-gray-900 font-medium">Track Pickup</Link>
             <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-200 flex items-center justify-center">
               <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User" className="w-8 h-8 object-cover" />
@@ -64,7 +64,7 @@ const PinLocation = () => {
         <section className="flex-1 min-w-0">
           {/* Breadcrumb */}
           <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-            <Link to="/request-pickup" className="text-blue-600 hover:text-blue-700">Request Pickup</Link>
+            <Link to="/customer/trash-type" className="text-blue-600 hover:text-blue-700">Request Pickup</Link>
             <span className="text-gray-400">/</span>
             <Link to="/select-waste-type" className="text-blue-600 hover:text-blue-700">Select Waste Type</Link>
             <span className="text-gray-400">/</span>
