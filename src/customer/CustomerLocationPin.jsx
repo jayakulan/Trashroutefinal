@@ -66,6 +66,8 @@ const PinLocation = () => {
           <div className="flex items-center space-x-2 text-sm text-gray-600 mb-6">
             <Link to="/customer/trash-type" className="text-blue-600 hover:text-blue-700">Request Pickup</Link>
             <span className="text-gray-400">/</span>
+            <Link to="/select-waste-type" className="text-blue-600 hover:text-blue-700">Select Waste Type</Link>
+            <span className="text-gray-400">/</span>
             <span className="text-gray-900 font-semibold">Pin Location</span>
           </div>
           {/* Progress Bar */}
